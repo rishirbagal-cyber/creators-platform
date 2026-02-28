@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 const stats = [
@@ -11,25 +12,49 @@ const stats = [
 const recentPosts = [
     { id: 1, title: 'My Journey into Open Source', date: 'Feb 21, 2025', views: 312, status: 'Published' },
     { id: 2, title: 'Understanding Async/Await in JS', date: 'Feb 17, 2025', views: 891, status: 'Published' },
-    // this are id
     { id: 3, title: 'Why I Switched to TypeScript', date: 'Feb 10, 2025', views: 1203, status: 'Published' },
     { id: 4, title: 'Web Accessibility Fundamentals', date: '—', views: 0, status: 'Draft' },
 ];
 
-
-
 function Dashboard() {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+
+        if (!token || !storedUser) {
+            navigate('/login');
+            return;
+        }
+
+        setUser(JSON.parse(storedUser));
+    }, [navigate]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+    };
+
+    if (!user) {
+        return <div className="loading">Loading...</div>;
+    }
+
     return (
         <main className="dashboard">
             <div className="dashboard-inner">
                 {/* Welcome */}
                 <div className="dashboard-header">
                     <div>
-                    
-                        <h1>Welcome back, Creator 👋</h1>
+                        <h1>Welcome back, {user.name} 👋</h1>
                         <p className="dashboard-subtitle">Here&apos;s what&apos;s happening with your blog</p>
                     </div>
-                    <Link to="#" className="btn btn-primary">+ New Post</Link>
+                    <div className="header-actions">
+                        <Link to="#" className="btn btn-primary">+ New Post</Link>
+                        <button onClick={handleLogout} className="btn btn-outline">Logout</button>
+                    </div>
                 </div>
 
                 {/* Stats */}

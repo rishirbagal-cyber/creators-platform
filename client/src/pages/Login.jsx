@@ -1,7 +1,78 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 function Login() {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value
+        }));
+        // Clear error when user starts typing
+        if (errors[id]) {
+            setErrors((prev) => ({ ...prev, [id]: '' }));
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.password) newErrors.password = 'Password is required';
+        return newErrors;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage('');
+        const newErrors = validateForm();
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // Success: Store token and user data
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            setMessage('Login successful! Redirecting...');
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 1500);
+
+        } catch (err) {
+            setMessage(err.message || 'Something went wrong');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <main className="auth-page">
             <div className="auth-card">
@@ -11,7 +82,13 @@ function Login() {
                     <p>Sign in to your CreatorHub account</p>
                 </div>
 
-                <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                {message && (
+                    <div className={`auth-message ${message.includes('successful') ? 'success' : 'error'}`}>
+                        {message}
+                    </div>
+                )}
+
+                <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email Address</label>
                         <input
@@ -19,7 +96,11 @@ function Login() {
                             type="email"
                             placeholder="you@example.com"
                             autoComplete="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={errors.email ? 'error-input' : ''}
                         />
+                        {errors.email && <span className="error-text">{errors.email}</span>}
                     </div>
 
                     <div className="form-group">
@@ -29,7 +110,11 @@ function Login() {
                             type="password"
                             placeholder="Enter your password"
                             autoComplete="current-password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={errors.password ? 'error-input' : ''}
                         />
+                        {errors.password && <span className="error-text">{errors.password}</span>}
                     </div>
 
                     <div className="form-options">
@@ -39,8 +124,12 @@ function Login() {
                         <a href="#!" className="forgot-link">Forgot password?</a>
                     </div>
 
-                    <button type="submit" className="btn btn-primary btn-full">
-                        Sign In
+                    <button
+                        type="submit"
+                        className="btn btn-primary btn-full"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
 

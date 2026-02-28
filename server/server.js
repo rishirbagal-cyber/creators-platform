@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
+import authRoutes from './routes/authRoutes.js'; // ✅ ADD THIS
 
 // Load environment variables
 dotenv.config();
@@ -15,9 +16,6 @@ const PORT = process.env.PORT || 5000;
 
 /*
   CORS Configuration
-  - Allows requests from frontend (CLIENT_URL)
-  - Enables credentials (cookies/auth headers)
-  - Handles preflight requests properly
 */
 app.use(
   cors({
@@ -35,8 +33,9 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running!' });
 });
 
-// User Routes
+// Routes
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes); // ✅ ADD THIS LINE
 
 // 404 Handler
 app.use((req, res) => {
