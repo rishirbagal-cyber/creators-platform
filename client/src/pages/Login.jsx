@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 function Login() {
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -11,6 +13,10 @@ function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get the return URL from location state, or default to dashboard
+    const from = location.state?.from?.pathname || '/dashboard';
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -57,13 +63,12 @@ function Login() {
                 throw new Error(data.message || 'Login failed');
             }
 
-            // Success: Store token and user data
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
+            // Success: Use context login function
+            login(data.user, data.token);
 
             setMessage('Login successful! Redirecting...');
             setTimeout(() => {
-                navigate('/dashboard');
+                navigate(from, { replace: true });
             }, 1500);
 
         } catch (err) {

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
 const stats = [
@@ -17,29 +18,21 @@ const recentPosts = [
 ];
 
 function Dashboard() {
-    const [user, setUser] = useState(null);
+    const { user, logout, loading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-
-        if (!token || !storedUser) {
+        if (!loading && !user) {
             navigate('/login');
-            return;
         }
+    }, [user, loading, navigate]);
 
-        setUser(JSON.parse(storedUser));
-    }, [navigate]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
-    };
+    if (loading) {
+        return <div className="loading">Loading...</div>;
+    }
 
     if (!user) {
-        return <div className="loading">Loading...</div>;
+        return null; // Or a redirect component
     }
 
     return (
@@ -53,7 +46,7 @@ function Dashboard() {
                     </div>
                     <div className="header-actions">
                         <Link to="#" className="btn btn-primary">+ New Post</Link>
-                        <button onClick={handleLogout} className="btn btn-outline">Logout</button>
+                        <button onClick={logout} className="btn btn-outline">Logout</button>
                     </div>
                 </div>
 
