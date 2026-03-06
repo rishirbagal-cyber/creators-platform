@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
+import api from '../services/api';
 
 function Register() {
     const navigate = useNavigate();
@@ -79,21 +80,13 @@ function Register() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('/api/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: formData.name.trim(),
-                    email: formData.email.toLowerCase(),
-                    password: formData.password
-                })
+            const response = await api.post('/users/register', {
+                name: formData.name.trim(),
+                email: formData.email.toLowerCase(),
+                password: formData.password
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.status === 201 || response.status === 200) {
                 setSuccessMessage('Account created successfully! Redirecting to login...');
                 setFormData({
                     name: '',
@@ -105,11 +98,9 @@ function Register() {
                 setTimeout(() => {
                     navigate('/login');
                 }, 2000);
-            } else {
-                setApiError(data.message || 'Registration failed');
             }
         } catch (error) {
-            setApiError('Unable to connect to server. Please try again later.');
+            setApiError(error.response?.data?.message || 'Registration failed');
         } finally {
             setIsLoading(false);
         }

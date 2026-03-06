@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
+import api from '../services/api';
 
 function Login() {
     const { login } = useAuth();
@@ -49,19 +50,9 @@ function Login() {
 
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
-            }
+            // Using the new api utility instead of fetch
+            const response = await api.post('/auth/login', formData);
+            const data = response.data;
 
             // Success: Use context login function
             login(data.user, data.token);
@@ -72,7 +63,7 @@ function Login() {
             }, 1500);
 
         } catch (err) {
-            setMessage(err.message || 'Something went wrong');
+            setMessage(err.response?.data?.message || err.message || 'Something went wrong');
         } finally {
             setIsLoading(false);
         }

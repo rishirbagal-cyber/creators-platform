@@ -6,22 +6,23 @@ import {
     updateUser,
     deleteUser,
 } from '../controllers/userController.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // POST /api/users/register - Register a new user
 router.post('/register', registerUser);
 
-// GET /api/users - Get all users
-router.get('/', getAllUsers);
+// GET /api/users - Get all users (Protected)
+router.get('/', protect, getAllUsers);
 
-// GET /api/users/:id - Get a user by ID
-router.get('/:id', getUserById);
+// GET /api/users/:id - Get a user by ID (Protected)
+router.get('/:id', protect, getUserById);
 
-// PUT /api/users/:id - Update a user
-router.put('/:id', updateUser);
+// PUT /api/users/:id - Update a user (Protected)
+router.put('/:id', protect, updateUser);
 
-// DELETE /api/users/:id - Delete a user
-router.delete('/:id', deleteUser);
+// DELETE /api/users/:id - Delete a user (Protected)
+router.delete('/:id', protect, deleteUser);
 
 export default router;

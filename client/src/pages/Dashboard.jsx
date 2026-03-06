@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
+import api from '../services/api';
 
 const stats = [
     { label: 'Posts Published', value: '12', icon: '📝' },
@@ -20,10 +21,24 @@ const recentPosts = [
 function Dashboard() {
     const { user, logout, loading } = useAuth();
     const navigate = useNavigate();
+    const [usersCount, setUsersCount] = useState(0);
 
     useEffect(() => {
         if (!loading && !user) {
             navigate('/login');
+        }
+
+        // Sample API call to verify authenticated interceptor
+        if (user) {
+            const fetchUsers = async () => {
+                try {
+                    const response = await api.get('/users');
+                    setUsersCount(response.data.length);
+                } catch (error) {
+                    console.error('Failed to fetch users:', error);
+                }
+            };
+            fetchUsers();
         }
     }, [user, loading, navigate]);
 
@@ -52,6 +67,11 @@ function Dashboard() {
 
                 {/* Stats */}
                 <div className="stats-grid">
+                    <div className="stat-card">
+                        <span className="stat-icon">🌟</span>
+                        <span className="stat-value">{usersCount}</span>
+                        <span className="stat-label">Platform Users</span>
+                    </div>
                     {stats.map((stat) => (
                         <div key={stat.label} className="stat-card">
                             <span className="stat-icon">{stat.icon}</span>
