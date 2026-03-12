@@ -17,6 +17,7 @@ import PublicRoute from './components/common/PublicRoute';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 
@@ -26,6 +27,7 @@ function App() {
       <AuthProvider>
         <div className="app-wrapper">
           <ToastContainer />
+          <Toaster position="top-right" />
           <Header />
 
           <Routes>

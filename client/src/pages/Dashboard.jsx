@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 import { toast } from 'react-toastify';
+import { toast as hotToast } from 'react-hot-toast';
 import api from '../services/api';
 import socket from '../services/socket';
 
@@ -69,6 +70,9 @@ function Dashboard() {
     useEffect(() => {
         if (!user) return;
 
+        // Update auth token in case it changed since socket was created
+        socket.auth = { token: localStorage.getItem('token') };
+
         // Connect the socket
         socket.connect();
 
@@ -84,11 +88,20 @@ function Dashboard() {
             console.error(`Socket connection error: ${err.message}`);
         });
 
+        // Listen for new post notifications
+        socket.on('newPost', (data) => {
+            hotToast.success(data.message, {
+                duration: 4000,
+                position: 'top-right',
+            });
+        });
+
         // Cleanup on unmount / user change
         return () => {
             socket.off('connect');
             socket.off('disconnect');
             socket.off('connect_error');
+            socket.off('newPost');
             socket.disconnect();
         };
     }, [user]);

@@ -1,6 +1,48 @@
 import Post from '../models/Post.js';
+import User from '../models/User.js';
 
-// @desc    Create new post
+// @desc    Create new post (with Socket.io event emission)
+// @route   POST /api/posts
+// @access  Private
+export const createPostWithSocket = (io) => async (req, res, next) => {
+    try {
+        const { title, content } = req.body;
+
+        if (!title || !content) {
+            const error = new Error('Please provide title and content');
+            error.status = 400;
+            return next(error);
+        }
+
+        const post = await Post.create({
+            title,
+            content,
+            author: req.user.id // From protect middleware
+        });
+
+        // Look up the author's name for the notification
+        const author = await User.findById(req.user.id).select('name email');
+
+        // Emit real-time event to all connected clients
+        io.emit('newPost', {
+            message: `New post created by ${author?.name || 'Someone'}!`,
+            post: {
+                _id: post._id,
+                title: post.title,
+                author: author?.name || 'Unknown'
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: post
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Create new post (legacy, kept for reference)
 // @route   POST /api/posts
 // @access  Private
 export const createPost = async (req, res, next) => {
