@@ -2,27 +2,33 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
         // 1. Validate input
         if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide email and password' });
+            const error = new Error('Please provide email and password');
+            error.status = 400;
+            return next(error);
         }
 
         // 2. Find user and include password
         const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            const error = new Error('Invalid email or password');
+            error.status = 401;
+            return next(error);
         }
 
         // 3. Verify password
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            const error = new Error('Invalid email or password');
+            error.status = 401;
+            return next(error);
         }
 
         // 4. Generate JWT
@@ -37,13 +43,12 @@ export const loginUser = async (req, res) => {
 
         // 6. Send response
         res.status(200).json({
-            status: 'success',
+            success: true,
             token,
             user
         });
 
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
+        next(error);
     }
 };

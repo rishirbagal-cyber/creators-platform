@@ -8,19 +8,26 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import CreatePost from './pages/CreatePost';
+import EditPost from './pages/EditPost';
 import NotFound from './pages/NotFound';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="app-wrapper">
+          <ToastContainer />
           <Header />
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -44,6 +51,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditPost />
                 </ProtectedRoute>
               }
             />

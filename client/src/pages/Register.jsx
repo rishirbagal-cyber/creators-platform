@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
+import { toast } from 'react-toastify';
 import api from '../services/api';
 
 function Register() {
@@ -15,8 +16,6 @@ function Register() {
 
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [apiError, setApiError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -72,9 +71,6 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setSuccessMessage('');
-        setApiError('');
-
         if (!validateForm()) return;
 
         setIsLoading(true);
@@ -87,7 +83,7 @@ function Register() {
             });
 
             if (response.status === 201 || response.status === 200) {
-                setSuccessMessage('Account created successfully! Redirecting to login...');
+                toast.success('Account created successfully! Redirecting to login...');
                 setFormData({
                     name: '',
                     email: '',
@@ -100,7 +96,8 @@ function Register() {
                 }, 2000);
             }
         } catch (error) {
-            setApiError(error.response?.data?.message || 'Registration failed');
+            const message = error.response?.data?.message || 'Registration failed';
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -114,9 +111,6 @@ function Register() {
                     <h1>Join CreatorHub</h1>
                     <p>Create your free account and start writing today</p>
                 </div>
-
-                {successMessage && <p className="success-message">{successMessage}</p>}
-                {apiError && <p className="error-message">{apiError}</p>}
 
                 <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="form-group">

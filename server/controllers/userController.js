@@ -4,19 +4,23 @@ import User from '../models/User.js';
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
 
         // Check required fields
         if (!name || !email || !password) {
-            return res.status(400).json({ message: 'Please provide name, email, and password' });
+            const error = new Error('Please provide name, email, and password');
+            error.status = 400;
+            return next(error);
         }
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'A user with this email already exists' });
+            const error = new Error('A user with this email already exists');
+            error.status = 400;
+            return next(error);
         }
 
         // Hash password
@@ -31,6 +35,7 @@ export const registerUser = async (req, res) => {
         });
 
         res.status(201).json({
+            success: true,
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -38,57 +43,57 @@ export const registerUser = async (req, res) => {
             updatedAt: user.updatedAt,
         });
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ message: 'A user with this email already exists' });
-        }
-        if (error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map((e) => e.message);
-            return res.status(400).json({ message: messages.join(', ') });
-        }
-        res.status(500).json({ message: 'Server error', error: error.message });
+        next(error);
     }
 };
 
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Public
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find();
-        res.status(200).json(users);
+        res.status(200).json({
+            success: true,
+            data: users
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        next(error);
     }
 };
 
 // @desc    Get a single user by ID
 // @route   GET /api/users/:id
 // @access  Public
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            const error = new Error('User not found');
+            error.status = 404;
+            return next(error);
         }
-        res.status(200).json(user);
+        res.status(200).json({
+            success: true,
+            data: user
+        });
     } catch (error) {
-        if (error.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user ID format' });
-        }
-        res.status(500).json({ message: 'Server error', error: error.message });
+        next(error);
     }
 };
 
 // @desc    Update a user
 // @route   PUT /api/users/:id
 // @access  Public
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            const error = new Error('User not found');
+            error.status = 404;
+            return next(error);
         }
 
         // Build update object
@@ -107,6 +112,7 @@ export const updateUser = async (req, res) => {
         );
 
         res.status(200).json({
+            success: true,
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
@@ -114,34 +120,23 @@ export const updateUser = async (req, res) => {
             updatedAt: updatedUser.updatedAt,
         });
     } catch (error) {
-        if (error.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user ID format' });
-        }
-        if (error.code === 11000) {
-            return res.status(400).json({ message: 'A user with this email already exists' });
-        }
-        if (error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map((e) => e.message);
-            return res.status(400).json({ message: messages.join(', ') });
-        }
-        res.status(500).json({ message: 'Server error', error: error.message });
+        next(error);
     }
 };
 
 // @desc    Delete a user
 // @route   DELETE /api/users/:id
 // @access  Public
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            const error = new Error('User not found');
+            error.status = 404;
+            return next(error);
         }
-        res.status(200).json({ message: 'User deleted successfully', _id: user._id });
+        res.status(200).json({ success: true, message: 'User deleted successfully', _id: user._id });
     } catch (error) {
-        if (error.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user ID format' });
-        }
-        res.status(500).json({ message: 'Server error', error: error.message });
+        next(error);
     }
 };

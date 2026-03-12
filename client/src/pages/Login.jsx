@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
+import { toast } from 'react-toastify';
 import api from '../services/api';
 
 function Login() {
@@ -12,7 +13,6 @@ function Login() {
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -40,7 +40,6 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('');
         const newErrors = validateForm();
 
         if (Object.keys(newErrors).length > 0) {
@@ -57,13 +56,14 @@ function Login() {
             // Success: Use context login function
             login(data.user, data.token);
 
-            setMessage('Login successful! Redirecting...');
+            toast.success('Login successful! Redirecting...');
             setTimeout(() => {
                 navigate(from, { replace: true });
             }, 1500);
 
         } catch (err) {
-            setMessage(err.response?.data?.message || err.message || 'Something went wrong');
+            const message = err.response?.data?.message || err.message || 'Something went wrong';
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -77,12 +77,6 @@ function Login() {
                     <h1>Welcome Back</h1>
                     <p>Sign in to your CreatorHub account</p>
                 </div>
-
-                {message && (
-                    <div className={`auth-message ${message.includes('successful') ? 'success' : 'error'}`}>
-                        {message}
-                    </div>
-                )}
 
                 <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="form-group">
