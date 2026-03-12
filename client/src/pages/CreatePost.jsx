@@ -1,25 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { toast } from 'react-toastify';
 import './CreatePost.css';
 
 function CreatePost() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
 
         try {
             await api.post('/posts', { title, content });
+            toast.success('Post created successfully!');
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to create post');
+            toast.error(err.response?.data?.message || 'Failed to create post');
             setLoading(false);
         }
     };
@@ -28,7 +28,6 @@ function CreatePost() {
         <div className="create-post-container">
             <div className="create-post-card">
                 <h1>Create New Post</h1>
-                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="title">Title</label>

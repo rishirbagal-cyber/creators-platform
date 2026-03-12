@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
+import { toast } from 'react-toastify';
 import './CreatePost.css'; // Reusing CreatePost styles
 
 function EditPost() {
@@ -8,7 +9,6 @@ function EditPost() {
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState('');
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ function EditPost() {
                 setLoading(false);
             } catch (err) {
                 console.error('Failed to fetch post:', err);
-                setError(err.response?.data?.message || 'Failed to load post data');
+                toast.error(err.response?.data?.message || 'Failed to load post data');
                 setLoading(false);
             }
         };
@@ -34,13 +34,13 @@ function EditPost() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        setError('');
 
         try {
             await api.put(`/posts/${id}`, { title, content });
+            toast.success('Post updated successfully!');
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to update post');
+            toast.error(err.response?.data?.message || 'Failed to update post');
             setSubmitting(false);
         }
     };
@@ -53,7 +53,6 @@ function EditPost() {
         <div className="create-post-container">
             <div className="create-post-card">
                 <h1>Edit Post</h1>
-                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="title">Title</label>

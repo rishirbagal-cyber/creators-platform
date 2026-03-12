@@ -16,7 +16,8 @@ export const protect = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             // Attach user data to request object
-            req.user = decoded;
+            // The payload in authController.js uses { userId: user._id }
+            req.user = { id: decoded.userId };
 
             next();
         } catch (error) {

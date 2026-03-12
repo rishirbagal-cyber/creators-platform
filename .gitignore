@@ -1,0 +1,14 @@
+# Root .gitignore
+node_modules/
+.env
+dist/
+.DS_Store
+
+# Client
+client/node_modules/
+client/dist/
+client/.env
+
+# Server
+server/node_modules/
+server/.env
