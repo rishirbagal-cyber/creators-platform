@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import postRoutesFactory from './routes/postRoutes.js';
+import uploadRoutes from './routes/upload.js';
 import errorHandler from './middleware/errorMiddleware.js';
 
 // Load environment variables
@@ -80,6 +81,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutesFactory(io));
+app.use('/api/upload', uploadRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
