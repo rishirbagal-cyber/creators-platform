@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-toastify';
 import './CreatePost.css';
+import ImageUpload from '../components/ImageUpload';
 
 function CreatePost() {
     const [title, setTitle] = useState('');
@@ -24,10 +25,21 @@ function CreatePost() {
         }
     };
 
+    const handleUpload = (formData) => {
+        const file = formData.get('image');
+        console.log('File instance uploaded:', file);
+        toast.success(`File received: ${file?.name}`);
+    };
+
     return (
         <div className="create-post-container">
             <div className="create-post-card">
                 <h1>Create New Post</h1>
+                
+                {/* Image Upload Component for testing file upload functionality separately */}
+                <ImageUpload onUpload={handleUpload} />
+                <hr style={{ margin: '20px 0', border: '1px solid #eee' }} />
+
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="title">Title</label>
