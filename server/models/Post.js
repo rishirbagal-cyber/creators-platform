@@ -11,6 +11,10 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add some content']
     },
+    coverImage: {
+        type: String,
+        default: null
+    },
     author: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',

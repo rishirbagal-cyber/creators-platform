@@ -6,7 +6,7 @@ import User from '../models/User.js';
 // @access  Private
 export const createPostWithSocket = (io) => async (req, res, next) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, coverImage } = req.body;
 
         if (!title || !content) {
             const error = new Error('Please provide title and content');
@@ -17,6 +17,7 @@ export const createPostWithSocket = (io) => async (req, res, next) => {
         const post = await Post.create({
             title,
             content,
+            coverImage,
             author: req.user.id // From protect middleware
         });
 
@@ -47,7 +48,7 @@ export const createPostWithSocket = (io) => async (req, res, next) => {
 // @access  Private
 export const createPost = async (req, res, next) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, coverImage } = req.body;
 
         if (!title || !content) {
             const error = new Error('Please provide title and content');
@@ -58,6 +59,7 @@ export const createPost = async (req, res, next) => {
         const post = await Post.create({
             title,
             content,
+            coverImage,
             author: req.user.id // From protect middleware
         });
 

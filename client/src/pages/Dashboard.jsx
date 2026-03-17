@@ -165,6 +165,7 @@ function Dashboard() {
                                 <table className="posts-table">
                                     <thead>
                                         <tr>
+                                            <th>Cover</th>
                                             <th>Title</th>
                                             <th>Date</th>
                                             <th>Content Preview</th>
@@ -174,6 +175,17 @@ function Dashboard() {
                                     <tbody>
                                         {posts.map((post) => (
                                             <tr key={post._id}>
+                                                <td className="post-cover-cell">
+                                                    {post.coverImage ? (
+                                                        <img 
+                                                            src={post.coverImage} 
+                                                            alt={`Cover image for ${post.title}`} 
+                                                            style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                                                        />
+                                                    ) : (
+                                                        <span style={{ color: '#999', fontSize: '0.8rem' }}>No image</span>
+                                                    )}
+                                                </td>
                                                 <td className="post-title-cell">{post.title}</td>
                                                 <td>{new Date(post.createdAt).toLocaleDateString()}</td>
                                                 <td className="post-preview-cell">
