@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -34,13 +35,23 @@ export const registerUser = async (req, res, next) => {
             password: hashedPassword,
         });
 
+        // Generate JWT
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRE }
+        );
+
         res.status(201).json({
             success: true,
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+            token,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+            }
         });
     } catch (error) {
         next(error);

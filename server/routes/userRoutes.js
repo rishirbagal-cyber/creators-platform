@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-    registerUser,
     getAllUsers,
     getUserById,
     updateUser,
@@ -9,9 +8,6 @@ import {
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
-
-// POST /api/users/register - Register a new user
-router.post('/register', registerUser);
 
 // GET /api/users - Get all users (Protected)
 router.get('/', protect, getAllUsers);
