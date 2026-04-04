@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  server:
+    image: rishirbagal/creator-platform-server:latest
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - ./server/.env
+      - ./server/.env.docker
+    depends_on:
+      - mongo
+
+  client:
+    image: rishirbagal/creator-platform-client:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
