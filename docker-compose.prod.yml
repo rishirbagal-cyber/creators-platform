@@ -9,7 +9,7 @@ services:
       - mongo-data:/data/db
 
   server:
-    image: rishirbagal/creator-platform-server:latest
+    image: rishikeshbagal/creator-platform-server:latest
     ports:
       - "${PORT}:${PORT}"
     env_file:
@@ -19,7 +19,7 @@ services:
       - mongo
 
   client:
-    image: rishirbagal/creator-platform-client:latest
+    image: rishikeshbagal/creator-platform-client:latest
     ports:
       - "3000:80"
     depends_on:
