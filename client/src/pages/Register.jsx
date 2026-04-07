@@ -76,7 +76,7 @@ function Register() {
         setIsLoading(true);
 
         try {
-            const response = await api.post('/users/register', {
+            const response = await api.post('/auth/register', {
                 name: formData.name.trim(),
                 email: formData.email.toLowerCase(),
                 password: formData.password
