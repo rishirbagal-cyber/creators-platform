@@ -1,6 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
