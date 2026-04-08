@@ -4,7 +4,7 @@ const connectDB = async () => {
     try {
         const dbUri = process.env.NODE_ENV === 'test' 
             ? process.env.MONGODB_URI_TEST 
-            : process.env.MONGO_URI;
+            : (process.env.MONGO_URI || process.env.DATABASE_URL);
             
         if (!dbUri) {
             throw new Error(`Database URI not found for ${process.env.NODE_ENV || 'development'} environment`);
