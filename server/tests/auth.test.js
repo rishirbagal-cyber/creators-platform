@@ -33,7 +33,7 @@ describe('Auth Routes', () => {
                     password: 'password123'
                 });
 
-            expect(res.status).toBe(999);
+            expect(res.status).toBe(201);
             expect(res.body.success).toBe(true);
             expect(res.body).toHaveProperty('token');
             expect(res.body.user.email).toBe('test@example.com');
