@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Comment to trigger PR CI
+
 describe('Auth Routes', () => {
     // 1. Connect to DB before tests
     beforeAll(async () => {
