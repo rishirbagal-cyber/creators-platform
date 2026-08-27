@@ -19,8 +19,8 @@ export function demonstrateEventLoop(logCallback) {
     }, 0);
 
     // 3. Microtask (Microtask Queue)
-    // Promises are Microtasks. They are queued and executed IMMEDIATELY after the 
-    // current Call Stack is empty, but BEFORE any Macrotasks (like setTimeout).
+    // Promises are Microtasks. They are queued and executed IMMEDIATELY after the , 
+    // current Call Stack is empty, but BEFORE any Macrotasks (like setTimeout) .
     Promise.resolve().then(() => {
         logCallback({ message: "3. [Microtask] Promise resolved", type: "microtask" });
     });
