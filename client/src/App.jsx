@@ -12,6 +12,7 @@ import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import PostView from './pages/PostView';
 import SqlDemo from './pages/SqlDemo';
+import EventLoopDemo from './pages/EventLoopDemo';
 import NotFound from './pages/NotFound';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -36,6 +37,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/post/:id" element={<PostView />} />
             <Route path="/sql-demo" element={<SqlDemo />} />
+            <Route path="/event-loop-demo" element={<EventLoopDemo />} />
             <Route
               path="/login"
               element={

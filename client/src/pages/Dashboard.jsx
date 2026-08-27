@@ -20,34 +20,32 @@ function Dashboard() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalPosts, setTotalPosts] = useState(0);
 
-    const fetchPosts = useCallback(async (pageNum) => {
-        // EVENT LOOP & ASYNC/AWAIT DEMONSTRATION:
+    const fetchPosts = useCallback((pageNum) => {
+        // EVENT LOOP DEMONSTRATION:
         // 1. Synchronous code executes first (Call Stack)
-        console.log("A: Starting fetchPosts (Synchronous execution)");
+        console.log("1. [Sync] Starting fetchPosts execution");
         
         setLoading(true);
-        try {
-            // 2. The `await` keyword pauses execution of this function.
-            // The actual API request is offloaded to Web APIs (browser).
-            console.log("B: Awaiting api.get (Offloading to Web API)");
-            const response = await api.get(`/posts?page=${pageNum}&limit=5`);
-            
-            // 3. Once the Promise resolves, this continuation is pushed to the Microtask Queue
-            // and executed by the Event Loop.
-            console.log("C: Promise resolved, updating state (Microtask Queue execution)");
-            
+        
+        // 2. Offload to Web API
+        console.log("2. [Sync] Initiating API request to /posts (Offloading to Web API)");
+        const fetchPromise = api.get(`/posts?page=${pageNum}&limit=5`);
+        
+        // 3. Register Microtask continuation
+        fetchPromise.then(response => {
+            console.log("4. [Microtask] Promise resolved, updating state");
             setPosts(response.data.data);
             setTotalPages(response.data.pagination.totalPages);
             setTotalPosts(response.data.pagination.total);
-        } catch (err) {
-            // Proper error handling for async operations
+        }).catch(err => {
             const message = err.response?.data?.message || 'Failed to load posts';
             toast.error(message);
-        } finally {
-            // `finally` always executes regardless of success or failure
-            console.log("D: fetchPosts complete (Finally block)");
+        }).finally(() => {
             setLoading(false);
-        }
+        });
+
+        // 4. Synchronous code continues while request is pending
+        console.log("3. [Sync] fetchPosts synchronous execution completed (Call Stack clears, waiting for Event Loop to run Microtasks)");
     }, []);
 
     const handleDelete = async (postId) => {

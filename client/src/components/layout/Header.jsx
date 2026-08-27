@@ -28,6 +28,13 @@ function Header() {
                     >
                         SQL JOINs
                     </NavLink>
+                    <NavLink
+                        to="/event-loop-demo"
+                        className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+                        end
+                    >
+                        Event Loop
+                    </NavLink>
 
                     {isAuthenticated() ? (
                         <>
